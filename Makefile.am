@@ -1,4 +1,4 @@
-SUBDIRS = include
+SUBDIRS = include src
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libestr.pc

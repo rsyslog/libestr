@@ -5,7 +5,7 @@ AC_PREREQ(2.61)
 AC_INIT([libestr], [0.0.0], [rgerhards@adiscon.com])
 AM_INIT_AUTOMAKE
 AM_SILENT_RULES([yes])
-AC_CONFIG_SRCDIR([src/estr.c])
+AC_CONFIG_SRCDIR([src/libestr.c])
 AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
@@ -83,6 +83,7 @@ fi
 AC_CONFIG_FILES([Makefile \
 		libestr.pc \
 		include/Makefile \
+		src/Makefile \
 		])
 AC_OUTPUT
 AC_CONFIG_MACRO_DIR([m4])
