@@ -182,6 +182,10 @@ es_addBuf(es_str_t **ps1, char *buf, size_t lenBuf)
 	es_str_t *s1 = *ps1;
 
 	ASSERT_STR(s1);
+	if(lenBuf == 0) {
+		r = 0;
+		goto done;
+	}
 
 	newlen = s1->lenStr + lenBuf;
 	if(s1->lenBuf < newlen) {

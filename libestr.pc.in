@@ -6,5 +6,5 @@ includedir=@includedir@
 Name: libestr
 Description: some essentials for string processing
 Version: @VERSION@
-Libs: -L${libdir} @rt_libs@
+Libs: -L${libdir} @rt_libs@ -lestr
 Cflags: -I${includedir}

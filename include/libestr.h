@@ -109,7 +109,7 @@ int es_strcmp(es_str_t *s1, es_str_t *s2);
 static inline unsigned char *
 es_getBufAddr(es_str_t *s)
 {
-	return ((unsigned char*) s) + sizeof(s);
+	return ((unsigned char*) s) + sizeof(es_str_t);
 }
 
 /**
