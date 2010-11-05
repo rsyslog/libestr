@@ -84,6 +84,37 @@ es_str_t* es_newStrFromCStr(char *cstr, size_t len);
 
 
 /**
+ * Create a new string object from a substring of an existing string.
+ * This involves copying the substring.
+ *
+ * @param[in] str original string
+ * @param[in] start beginning position of substring (0-based)
+ * @param[in] len length of substring to extract
+ * @returns pointer to new object or NULL on error
+ *
+ * If start > strlen, a valid (!) empty string will be returned. If
+ * start+len > strlen, the rest of the string starting at start will be
+ * returned.
+ */
+es_str_t* es_newStrFromSubStr(es_str_t *str, size_t start, size_t len);
+
+
+/**
+ * Duplicate a str.
+ * Currently, the string is actually duplicated. May be changed to
+ * copy-on-write in later releases.
+ *
+ * @param[in] str original string
+ * @returns pointer to new object or NULL on error
+ */
+static inline es_str_t*
+es_strdup(es_str_t *str)
+{
+	return es_newStrFromSubStr(str, 0, es_strlen(str));
+}
+
+
+/**
  * Compare two string objects.
  * Semantics are the same as strcmp().
  *
