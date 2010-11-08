@@ -114,6 +114,7 @@ es_newStr(size_t lenhint)
 	s->objID = ES_STRING_OID;
 #	endif
 	s->lenBuf = lenhint;
+	s->lenStr = 0;
 
 done:
 	return s;
