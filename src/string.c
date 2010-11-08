@@ -270,3 +270,78 @@ es_str2cstr(es_str_t *s, char *nulEsc)
 done:
 	return cstr;
 }
+
+
+/* Handle the actual unescaping.
+ * a helper to es_unescapeStr(), to help make the function easier to read.
+ */
+static inline void
+doUnescape(unsigned char *c, size_t lenStr, size_t *iSrc, size_t iDst)
+{
+	if(c[*iSrc] == '\\') {
+		if(++(*iSrc) == lenStr) {
+			/* error, incomplete escape, treat as single char */
+			c[iDst] = '\\';
+		}
+		/* regular case, unescape */
+		switch(c[*iSrc]) {
+		case '0':
+			c[iDst] = '\0';
+			break;
+		case 'a':
+			c[iDst] = '\007';
+			break;
+		case 'b':
+			c[iDst] = '\b';
+			break;
+		case 'f':
+			c[iDst] = '\014';
+			break;
+		case 'n':
+			c[iDst] = '\n';
+			break;
+		case 'r':
+			c[iDst] = '\r';
+			break;
+		case '\'':
+			c[iDst] = '\'';
+			break;
+		case '"':
+			c[iDst] = '"';
+			break;
+		case '?':
+			c[iDst] = '?';
+			break;
+		/* TODO: other sequences */
+		}
+	} else {
+		/* regular character */
+		c[iDst] = c[*iSrc];
+	}
+}
+
+void
+es_unescapeStr(es_str_t *s)
+{
+	size_t iSrc, iDst;
+	unsigned char *c;
+	assert(s != NULL);
+
+	c = es_getBufAddr(s);
+	/* scan for first escape sequence (if we are luky, there is none!) */
+	iSrc = 0;
+	while(iSrc < s->lenStr && c[iSrc] != '\\')
+		++iSrc;
+	/* now we have a sequence or end of string. In any case, we process
+	 * all remaining characters (maybe 0!) and unescape.
+	 */
+	if(iSrc != s->lenStr) {
+		iDst = iSrc;
+		while(iSrc < s->lenStr) {
+			doUnescape(c, s->lenStr, &iSrc, iDst);
+			++iSrc;
+			++iDst;
+		}
+		s->lenStr = iDst;
+	}
+}

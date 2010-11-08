@@ -229,4 +229,38 @@ es_addStr(es_str_t **ps1, es_str_t *s2)
  */
 char *es_str2cstr(es_str_t *s, char *nulEsc);
 
+/**
+ * Unescape a string.
+ * The escape seqences defined below will be unescaped and replaced
+ * by a single character. The string is modified in place (note that
+ * space is always sufficient, because the resulting string will be
+ * smaller or of equal size). This function can not run into trouble,
+ * so it does not return a return status.
+ *
+ * The following escape sequences, inspired by the C language, are supported:
+ * (Note: double backslashes are for Doxygen, of course this is to
+ * be used with single backslashes):
+ * - \\0 NUL
+ * - \\a BEL
+ * - \\b Backspace
+ * - \\f FF
+ * - \\n LF
+ * - \\r CR
+ * - \\t HT
+ * - \\' singlu quotation mark
+ * - \\" double quotation mark
+ * - \\? question mark
+ * - \\\\ backslash character
+ * - \\ooo ASCII Character in octal notation (o being octal digit)
+ * - \\xhh ASCC character in hexadecimal notation
+ * - \\xhhhh Unicode characer in headecimal notation
+ * All other escape sequences are undefined. Currently, this is
+ * interpreted as the escape character itself, but this is not
+ * guaranteed. Most importantly, a special meaning may be assigned
+ * to any of the currently-unassigned characters in the future.
+ *
+ * @param[in/out] s string object to unescape.
+ */
+void es_unescapeStr(es_str_t *s);
+
 #endif /* #ifndef LIBESTR_H_INCLUDED */
