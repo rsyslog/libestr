@@ -72,7 +72,7 @@ es_extendBuf(es_str_t **ps, size_t minNeeded)
 	/* first compute the new size needed */
 	if(minNeeded > s->allocInc) {
 		/* TODO: think about optimizing this based on allocInc */
-		newSize = minNeeded;
+		newSize = s->lenBuf + minNeeded;
 	} else {
 		newSize = s->lenBuf + s->allocInc;
 		/* set new allocInc for fast growing string */
@@ -81,9 +81,8 @@ es_extendBuf(es_str_t **ps, size_t minNeeded)
 		else
 			s->allocInc = 2 * s->allocInc;
 	}
-	newSize += s->lenBuf + sizeof(es_str_t); /* add current size */
 
-	if((s = (es_str_t*) realloc(s, newSize)) == NULL) {
+	if((s = (es_str_t*) realloc(s, newSize + sizeof(es_str_t))) == NULL) {
 		r = errno;
 		goto done;
 	}
@@ -114,6 +113,7 @@ es_newStr(size_t lenhint)
 	s->objID = ES_STRING_OID;
 #	endif
 	s->lenBuf = lenhint;
+	s->allocInc = lenhint;
 	s->lenStr = 0;
 
 done:
