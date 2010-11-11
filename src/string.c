@@ -302,6 +302,9 @@ doUnescape(unsigned char *c, size_t lenStr, size_t *iSrc, size_t iDst)
 		case 'r':
 			c[iDst] = '\r';
 			break;
+		case 't':
+			c[iDst] = '\t';
+			break;
 		case '\'':
 			c[iDst] = '\'';
 			break;
