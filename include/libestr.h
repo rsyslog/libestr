@@ -52,6 +52,24 @@ typedef struct
 char *es_version(void);
 
 /**
+ * Get the base address for the string's buffer.
+ * Proper use for library users is to gain read-only access to the buffer,
+ * so that it may be used inside an i/o request or similar things. Note that
+ * it is an \b invalid assumption that the buffer address keeps constant between
+ * library calls. This is only guaranteed for read-only methods. For example,
+ * the methods used to grow the string may be forced to reallocate the buffer
+ * on a new address with sufficiently free space.
+ *
+ * @param[in] s string object
+ * @returns address of buffer <b>Note: this is NOT a zero-terminated C string!</b>
+ */
+static inline unsigned char *
+es_getBufAddr(es_str_t *s)
+{
+	return ((unsigned char*) s) + sizeof(es_str_t);
+}
+
+/**
  * Return length of provided string object.
  */
 static inline size_t es_strlen(es_str_t *str)
@@ -100,6 +118,26 @@ es_str_t* es_newStrFromSubStr(es_str_t *str, size_t start, size_t len);
 
 
 /**
+ * Empty a string.
+ * An existing string is set to empty state, but no allocation
+ * or allocation information is reset. This function is useful if
+ * the same string object is used several times within a loop
+ * and it shall be re-set to "" on each iteration. As the allocation
+ * is preserved, the string in most cases needs to grow only very
+ * few times. This is considered the fastest method to repeatedly
+ * work with temporary strings.
+ *
+ * @param[in] str the string to empty
+ */
+static inline void
+es_emptyStr(es_str_t *str)
+{
+	str->lenStr = 0;
+}
+
+
+
+/**
  * Duplicate a str.
  * Currently, the string is actually duplicated. May be changed to
  * copy-on-write in later releases.
@@ -115,6 +153,21 @@ es_strdup(es_str_t *str)
 
 
 /**
+ * Compare a string against a buffer.
+ * Semantics are the same as strcmp(). This function is required in
+ * order to permit simple comparisons against C strings, what
+ * otherwise would require conversions. As a side-effect, it can also
+ * compare against substrings and other buffers of any type.
+ *
+ * @param[in] s string to compare
+ * @param[in] b buffer to compare against
+ * @param[in] len lenght of buffer
+ * @returns 0 if equal, negative if s<cs, positive if s>cs
+*/
+int es_strbufcmp(es_str_t *s, unsigned char *b, size_t len);
+
+
+/**
  * Compare two string objects.
  * Semantics are the same as strcmp().
  *
@@ -122,26 +175,18 @@ es_strdup(es_str_t *str)
  * @param[in] s2 second string
  * @returns 0 if equal, negative if s1<s2, positive if s1>s2
 */
-int es_strcmp(es_str_t *s1, es_str_t *s2);
+static inline int
+es_strcmp(es_str_t *s1, es_str_t *s2)
+{
+	return es_strbufcmp(s1, es_getBufAddr(s2), s2->lenStr);
+}
 
 
 /**
- * Get the base address for the string's buffer.
- * Proper use for library users is to gain read-only access to the buffer,
- * so that it may be used inside an i/o request or similar things. Note that
- * it is an \b invalid assumption that the buffer address keeps constant between
- * library calls. This is only guaranteed for read-only methods. For example,
- * the methods used to grow the string may be forced to reallocate the buffer
- * on a new address with sufficiently free space.
- *
- * @param[in] s string object
- * @returns address of buffer <b>Note: this is NOT a zero-terminated C string!</b>
+ * A macro to compare a string against a constant C string
  */
-static inline unsigned char *
-es_getBufAddr(es_str_t *s)
-{
-	return ((unsigned char*) s) + sizeof(es_str_t);
-}
+#define es_strconstcmp(str, constcstr) \
+	es_strbufcmp(str, (unsigned char*) constcstr, sizeof(constcstr) - 1)
 
 /**
  * Extend string buffer.

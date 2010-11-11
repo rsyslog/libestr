@@ -167,25 +167,24 @@ es_deleteStr(es_str_t *s)
 
 
 int
-es_strcmp(es_str_t *s1, es_str_t *s2)
+es_strbufcmp(es_str_t *s, unsigned char *buf, size_t lenBuf)
 {
 	int r;
 	size_t i;
-	unsigned char *c1, *c2;
+	unsigned char *c;
 
-	ASSERT_STR(s1);
-	ASSERT_STR(s2);
-	if(s1->lenStr < s2->lenStr)
+	ASSERT_STR(s);
+	assert(buf != NULL);
+	if(s->lenStr < lenBuf)
 		r = -1;
-	else if(s1->lenStr > s2->lenStr)
+	else if(s->lenStr > lenBuf)
 		r = 1;
 	else {
-		c1 = es_getBufAddr(s1);
-		c2 = es_getBufAddr(s2);
+		c = es_getBufAddr(s);
 		r = 0;	/* assume: strings equal, will be reset if not */
-		for(i = 0 ; i < s1->lenStr ; ++i) {
-			if(c1[i] != c2[i]) {
-				r = c1[i] - c2[i];
+		for(i = 0 ; i < s->lenStr ; ++i) {
+			if(c[i] != buf[i]) {
+				r = c[i] - buf[i];
 				break;
 			}
 		}
