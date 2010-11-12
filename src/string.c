@@ -243,14 +243,16 @@ es_str2cstr(es_str_t *s, char *nulEsc)
 	if(nbrNUL == 0) {
 		/* no special handling needed */
 		if((cstr = malloc(s->lenStr + 1)) == NULL) goto done;
-		memcpy(cstr, c, s->lenStr);
+		if(s->lenStr > 0)
+			memcpy(cstr, c, s->lenStr);
 		cstr[s->lenStr] = '\0';
 	} else {
 		/* we have NUL bytes present and need to process them
 		 * during creation of the C string.
 		 */
 		lenEsc = (nulEsc == NULL) ? 0 : strlen(nulEsc);
-		if((cstr = malloc(s->lenStr + nbrNUL * (lenEsc - 1) + 1)) == NULL) goto done;
+		if((cstr = malloc(s->lenStr + nbrNUL * (lenEsc - 1) + 1)) == NULL)
+			goto done;
 		for(i = iDst = 0 ; i < s->lenStr ; ++i) {
 			if(c[i] == 0x00) {
 				if(lenEsc == 1) {
