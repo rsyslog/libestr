@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 #include <errno.h>
 
 #include "libestr.h"
@@ -273,6 +274,23 @@ done:
 }
 
 
+/**
+ * Get numerical value of a hex digit. This is a helper function.
+ * @param[in] c a character containing 0..9, A..Z, a..z anything else
+ * is an (undetected) error.
+ */
+static inline int hexDigitVal(char c)
+{
+	int r;
+	if(c < 'A')
+		r = c - '0';
+	else if(c < 'a')
+		r = c - 'A' + 10;
+	else
+		r = c - 'a' + 10;
+	return r;
+}
+
 /* Handle the actual unescaping.
  * a helper to es_unescapeStr(), to help make the function easier to read.
  */
@@ -316,6 +334,17 @@ doUnescape(unsigned char *c, size_t lenStr, size_t *iSrc, size_t iDst)
 		case '?':
 			c[iDst] = '?';
 			break;
+		case 'x':
+			if(    (*iSrc)+2 == lenStr
+			   || !isxdigit(c[(*iSrc)+1])
+			   || !isxdigit(c[(*iSrc)+2])) {
+				/* error, incomplete escape, use as is */
+				c[iDst] = '\\';
+				--(*iSrc);
+			}
+			c[iDst] = (hexDigitVal(c[(*iSrc)+1]) << 4) +
+				  hexDigitVal(c[(*iSrc)+2]);
+			*iSrc += 2;
 		/* TODO: other sequences */
 		}
 	} else {
