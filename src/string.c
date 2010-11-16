@@ -147,7 +147,7 @@ es_newStrFromSubStr(es_str_t *str, es_size_t start, es_size_t len)
 	if(start > es_strlen(str))
 		goto done;
 	else if(start + len > es_strlen(str) - 1)
-		len = es_strlen(str) - 1 - start;
+		len = es_strlen(str) - start;
 
 	memcpy(es_getBufAddr(s), es_getBufAddr(str)+start, len);
 	s->lenStr = len;

@@ -56,6 +56,7 @@ typedef struct
 	es_size_t lenStr;		/**< actual length of string */
 	/* non word-aligned items */
 	unsigned short allocInc;	/**< size that new allocs will be grown */
+	// TODO: remove allocInc, it is always double the buffer size!
 } es_str_t;
 
 
