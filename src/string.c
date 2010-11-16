@@ -63,11 +63,11 @@
  * @returns 0 on success, something else otherwise
  */
 int
-es_extendBuf(es_str_t **ps, size_t minNeeded)
+es_extendBuf(es_str_t **ps, es_size_t minNeeded)
 {
 	int r = 0;
 	es_str_t *s = *ps;
-	size_t newSize;
+	es_size_t newSize;
 
 	ASSERT_STR(s);
 	/* first compute the new size needed */
@@ -98,7 +98,7 @@ done:
 /* ------------------------------ END HELPERS ------------------------------ */
 
 es_str_t *
-es_newStr(size_t lenhint)
+es_newStr(es_size_t lenhint)
 {
 	es_str_t *s;
 	/* we round length to a multiple of 8 in the hope to reduce
@@ -123,7 +123,7 @@ done:
 
 
 es_str_t*
-es_newStrFromCStr(char *cstr, size_t len)
+es_newStrFromCStr(char *cstr, es_size_t len)
 {
 	es_str_t *s;
 	assert(strlen(cstr) == len);
@@ -138,7 +138,7 @@ done:
 
 
 es_str_t*
-es_newStrFromSubStr(es_str_t *str, size_t start, size_t len)
+es_newStrFromSubStr(es_str_t *str, es_size_t start, es_size_t len)
 {
 	es_str_t *s;
 	
@@ -146,8 +146,8 @@ es_newStrFromSubStr(es_str_t *str, size_t start, size_t len)
 
 	if(start > es_strlen(str))
 		goto done;
-	else if(start + len > es_strlen(str))
-		len = es_strlen(str) - start;
+	else if(start + len > es_strlen(str) - 1)
+		len = es_strlen(str) - 1 - start;
 
 	memcpy(es_getBufAddr(s), es_getBufAddr(str)+start, len);
 	s->lenStr = len;
@@ -168,10 +168,10 @@ es_deleteStr(es_str_t *s)
 
 
 int
-es_strbufcmp(es_str_t *s, unsigned char *buf, size_t lenBuf)
+es_strbufcmp(es_str_t *s, unsigned char *buf, es_size_t lenBuf)
 {
 	int r;
-	size_t i;
+	es_size_t i;
 	unsigned char *c;
 
 	ASSERT_STR(s);
@@ -195,10 +195,10 @@ es_strbufcmp(es_str_t *s, unsigned char *buf, size_t lenBuf)
 
 
 int
-es_addBuf(es_str_t **ps1, char *buf, size_t lenBuf)
+es_addBuf(es_str_t **ps1, char *buf, es_size_t lenBuf)
 {
 	int r;
-	size_t newlen;
+	es_size_t newlen;
 	es_str_t *s1 = *ps1;
 
 	ASSERT_STR(s1);
@@ -228,9 +228,9 @@ char *
 es_str2cstr(es_str_t *s, char *nulEsc)
 {
 	char *cstr;
-	size_t lenEsc;
+	es_size_t lenEsc;
 	int nbrNUL;
-	size_t i, iDst;
+	es_size_t i, iDst;
 	unsigned char *c;
 
 	/* detect number of NULs inside string */
@@ -295,7 +295,7 @@ static inline int hexDigitVal(char c)
  * a helper to es_unescapeStr(), to help make the function easier to read.
  */
 static inline void
-doUnescape(unsigned char *c, size_t lenStr, size_t *iSrc, size_t iDst)
+doUnescape(unsigned char *c, es_size_t lenStr, es_size_t *iSrc, es_size_t iDst)
 {
 	if(c[*iSrc] == '\\') {
 		if(++(*iSrc) == lenStr) {
@@ -356,7 +356,7 @@ doUnescape(unsigned char *c, size_t lenStr, size_t *iSrc, size_t iDst)
 void
 es_unescapeStr(es_str_t *s)
 {
-	size_t iSrc, iDst;
+	es_size_t iSrc, iDst;
 	unsigned char *c;
 	assert(s != NULL);
 

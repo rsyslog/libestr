@@ -32,17 +32,30 @@
 #define	LIBESTR_H_INCLUDED
 
 
-#define ES_STRING_OID 0x00FAFA00
-#define ES_STRING_FREED 0x00FFFF00
+/**
+ * Data type for string sizes.
+ */
+typedef unsigned int es_size_t;
 
+/**
+ * The string object.
+ * @note
+ * We do not use es_size_t, because that tends to be 64 bits on 64 bit platforms.
+ * In almost all cases I can think of, 4GB is a sufficient upper limit on string
+ * size. So we use unsigned ints, which means we save a lot of space and efficieny,
+ * what is especially important if there is a large number of strings inside a
+ * process.
+ * For the same reason, we do \b not provide a way to create and automatically
+ * free a traditional C string. That would requre another pointer (8 bytes of
+ * overhead on a 64 bit machine!).
+ */
 typedef struct
 {	
-#ifndef	NDEBUG
-	unsigned objID;		/**< object ID */
-#endif
-	unsigned short allocInc; /**< size that new allocs will be grown */
-	size_t lenBuf;		/**< length of buffer (including free space) */
-	size_t lenStr;		/**< actual length of string */
+	/* word-aligned items */
+	es_size_t lenBuf;		/**< length of buffer (including free space) */
+	es_size_t lenStr;		/**< actual length of string */
+	/* non word-aligned items */
+	unsigned short allocInc;	/**< size that new allocs will be grown */
 } es_str_t;
 
 
@@ -72,7 +85,7 @@ es_getBufAddr(es_str_t *s)
 /**
  * Return length of provided string object.
  */
-static inline size_t es_strlen(es_str_t *str)
+static inline es_size_t es_strlen(es_str_t *str)
 {
 	return(str->lenStr);
 }
@@ -82,7 +95,7 @@ static inline size_t es_strlen(es_str_t *str)
  * @param[in] lenhint expected max length of string. Do \b not use too large value.
  * @returns pointer to new object or NULL on error
  */
-es_str_t* es_newStr(size_t lenhint);
+es_str_t* es_newStr(es_size_t lenhint);
 
 /**
  * delete a string object.
@@ -98,7 +111,7 @@ void es_deleteStr(es_str_t *str);
  *  		the length is known and we use this as a time-safer (if present).
  * @returns pointer to new object or NULL on error
  */
-es_str_t* es_newStrFromCStr(char *cstr, size_t len);
+es_str_t* es_newStrFromCStr(char *cstr, es_size_t len);
 
 
 /**
@@ -114,7 +127,7 @@ es_str_t* es_newStrFromCStr(char *cstr, size_t len);
  * start+len > strlen, the rest of the string starting at start will be
  * returned.
  */
-es_str_t* es_newStrFromSubStr(es_str_t *str, size_t start, size_t len);
+es_str_t* es_newStrFromSubStr(es_str_t *str, es_size_t start, es_size_t len);
 
 
 /**
@@ -164,7 +177,7 @@ es_strdup(es_str_t *str)
  * @param[in] len lenght of buffer
  * @returns 0 if equal, negative if s<cs, positive if s>cs
 */
-int es_strbufcmp(es_str_t *s, unsigned char *b, size_t len);
+int es_strbufcmp(es_str_t *s, unsigned char *b, es_size_t len);
 
 
 /**
@@ -198,7 +211,7 @@ es_strcmp(es_str_t *s1, es_str_t *s2)
  * @param[in] minNeeded minimum number of additional bytes needed
  * @returns 0 on success, something else otherwise
  */
-int es_extendBuf(es_str_t **ps, size_t minNeeded);
+int es_extendBuf(es_str_t **ps, es_size_t minNeeded);
 
 /**
  * Append a character to the current string object.
@@ -234,7 +247,7 @@ done:
  *
  * @returns 0 on success, something else otherwise
  */
-int es_addBuf(es_str_t **ps1, char *buf, size_t lenBuf);
+int es_addBuf(es_str_t **ps1, char *buf, es_size_t lenBuf);
 
 
 /**
