@@ -39,11 +39,11 @@
 
 #define ERR_ABORT {r = 1; goto done; }
 
-#if !defined(NDEBUG)
+#if 1 /* !defined(NDEBUG) TODO: decide if we want this or not! */
 #	define CHECK_STR 
-#	define ASSERT_STR 
+#	define ASSERT_STR(s)
 #else
-#	define CHECK_STR \
+#	define CHECK_STR
 		if(s->objID != ES_STRING_OID) { \
 			r = -1; \
 			goto done; \
@@ -111,7 +111,7 @@ es_newStr(es_size_t lenhint)
 		goto done;
 
 #	ifndef NDEBUG
-	s->objID = ES_STRING_OID;
+	/*s->objID = ES_STRING_OID;*/
 #	endif
 	s->lenBuf = lenhint;
 	s->allocInc = lenhint;
@@ -160,7 +160,7 @@ void
 es_deleteStr(es_str_t *s)
 {
 	ASSERT_STR(s);
-#	if !defined(NDEBUG)
+#	if 0 /*!defined(NDEBUG)*/
 	s->objID = ES_STRING_FREED;
 #	endif
 	free(s);
