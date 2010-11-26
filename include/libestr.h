@@ -250,6 +250,11 @@ done:
  */
 int es_addBuf(es_str_t **ps1, char *buf, es_size_t lenBuf);
 
+/**
+ * A macro to add a traditional C constant to a string.
+ */
+#define es_addBufConstcstr(str, constcstr) \
+	es_addBuf(str, constcstr, sizeof(constcstr) - 1)
 
 /**
  * Append a second string to the first one.
