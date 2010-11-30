@@ -52,11 +52,11 @@ typedef unsigned int es_size_t;
 typedef struct
 {	
 	/* word-aligned items */
+	es_size_t lenStr;		/**< actual length of string,
+					    MUST be first element of struct because
+					    of inline functions! */
 	es_size_t lenBuf;		/**< length of buffer (including free space) */
-	es_size_t lenStr;		/**< actual length of string */
 	/* non word-aligned items */
-	unsigned short allocInc;	/**< size that new allocs will be grown */
-	// TODO: remove allocInc, it is always double the buffer size!
 } es_str_t;
 
 
@@ -221,21 +221,7 @@ int es_extendBuf(es_str_t **ps, es_size_t minNeeded);
  * @param[in/out] ps string to be extened (updatedable pointer required!)
  * @returns 0 on success, something else otherwise
  */
-static inline int
-es_addChar(es_str_t **ps, unsigned char c)
-{
-	int r = 0;
-
-	if((*ps)->lenStr >= (*ps)->lenBuf) {  
-		if((r = es_extendBuf(ps, 1)) != 0) goto done;
-	}
-
-	/* ok, when we reach this, we have sufficient memory */
-	*(es_getBufAddr(*ps) + (*ps)->lenStr++) = c;
-
-done:
-	return r;
-}
+int es_addChar(es_str_t **ps, unsigned char c);
 
 
 /**

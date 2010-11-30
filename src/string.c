@@ -70,17 +70,12 @@ es_extendBuf(es_str_t **ps, es_size_t minNeeded)
 	es_size_t newSize;
 
 	ASSERT_STR(s);
+	newSize = 2 * s->lenBuf;
 	/* first compute the new size needed */
-	if(minNeeded > s->allocInc) {
-		/* TODO: think about optimizing this based on allocInc */
+	if(minNeeded > s->lenBuf) {
 		newSize = s->lenBuf + minNeeded;
 	} else {
-		newSize = s->lenBuf + s->allocInc;
-		/* set new allocInc for fast growing string */
-		if(2 * s->allocInc > 65535) /* prevent overflow! */
-			s->allocInc = 65535;
-		else
-			s->allocInc = 2 * s->allocInc;
+		newSize = 2 * s->lenBuf;
 	}
 
 	if((s = (es_str_t*) realloc(s, newSize + sizeof(es_str_t))) == NULL) {
@@ -114,7 +109,6 @@ es_newStr(es_size_t lenhint)
 	/*s->objID = ES_STRING_OID;*/
 #	endif
 	s->lenBuf = lenhint;
-	s->allocInc = lenhint;
 	s->lenStr = 0;
 
 done:
@@ -190,6 +184,23 @@ es_strbufcmp(es_str_t *s, unsigned char *buf, es_size_t lenBuf)
 			}
 		}
 	}
+	return r;
+}
+
+
+int
+es_addChar(es_str_t **ps, unsigned char c)
+{
+	int r = 0;
+
+	if((*ps)->lenStr >= (*ps)->lenBuf) {  
+		if((r = es_extendBuf(ps, 1)) != 0) goto done;
+	}
+
+	/* ok, when we reach this, we have sufficient memory */
+	*(es_getBufAddr(*ps) + (*ps)->lenStr++) = c;
+
+done:
 	return r;
 }
 
