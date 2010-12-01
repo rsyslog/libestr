@@ -132,6 +132,21 @@ done:
 
 
 es_str_t*
+es_newStrFromBuf(char *buf, es_size_t len)
+{
+	es_str_t *s;
+	
+	if((s = es_newStr(len)) == NULL) goto done;
+
+	memcpy(es_getBufAddr(s), buf, len);
+	s->lenStr = len;
+
+done:
+	return s;
+}
+
+
+es_str_t*
 es_newStrFromSubStr(es_str_t *str, es_size_t start, es_size_t len)
 {
 	es_str_t *s;

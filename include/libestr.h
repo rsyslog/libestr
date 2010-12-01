@@ -57,6 +57,11 @@ typedef struct
 					    of inline functions! */
 	es_size_t lenBuf;		/**< length of buffer (including free space) */
 	/* non word-aligned items */
+	/* --currently none-- */
+	/* NOTE: the actual string data is placed AFTER the last data
+	 * element. It is accessed by pointer arithmetic. This saves us
+	 * storing another pointer (8 byte on 64bit machines!)
+	 */
 } es_str_t;
 
 
@@ -129,6 +134,17 @@ es_str_t* es_newStrFromCStr(char *cstr, es_size_t len);
  * returned.
  */
 es_str_t* es_newStrFromSubStr(es_str_t *str, es_size_t start, es_size_t len);
+
+
+/**
+ * Create a new string object from a buffer.
+ * This involves copying the buffer.
+ *
+ * @param[in] buf buffer begin
+ * @param[in] len length of buffer
+ * @returns pointer to new object or NULL on error
+ */
+es_str_t* es_newStrFromBuf(char *buf, es_size_t len);
 
 
 /**
