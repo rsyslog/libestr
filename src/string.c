@@ -147,6 +147,33 @@ done:
 
 
 es_str_t*
+es_newStrFromNumber(long long num)
+{
+	char numbuf[20];	/* 2^64 has 20 digits ;) */
+	int i,j;
+	es_str_t *s;
+	
+	/* generate string (reversed) */
+	for(i = 0 ; num != 0 ; ++i) {
+		numbuf[i] = num % 10 + '0';
+		num /= 10;
+	}
+	if(i == 0)
+		numbuf [i++] = '0';
+
+	/* now create the actual string */
+	if((s = es_newStr(i)) == NULL) goto done;
+	s->lenStr = i;
+	for(j = 0 ; --i >= 0 ; ++j, --i) {
+		es_getBufAddr(s)[j] = numbuf[i];
+	}
+
+done:
+	return s;
+}
+
+
+es_str_t*
 es_newStrFromSubStr(es_str_t *str, es_size_t start, es_size_t len)
 {
 	es_str_t *s;
@@ -297,6 +324,87 @@ es_str2cstr(es_str_t *s, char *nulEsc)
 
 done:
 	return cstr;
+}
+
+/*helpers to es_str2num */
+/* startindex is provided for decimal to cover '-' */
+long long
+es_str2num_dec(es_str_t *s, unsigned i)
+{
+	long long num;
+	unsigned char *c;
+
+	num = 0;
+	c = es_getBufAddr(s);
+	while(i < s->lenStr && isdigit(c[i])) {
+		num = num * 10 + c[i] - '0';
+		++i;
+	}
+	return num;
+}
+long long
+es_str2num_oct(es_str_t *s)
+{
+	long long num;
+	unsigned char *c;
+	unsigned i;
+
+	i = 0;
+	num = 0;
+	c = es_getBufAddr(s);
+	while(i < s->lenStr && (c[i] >= '0' && c[i] <= '7')) {
+		num = num * 8 + c[i] - '0';
+		++i;
+	}
+	return num;
+}
+long long
+es_str2num_hex(es_str_t *s)
+{
+	long long num;
+	unsigned char *c;
+	unsigned i;
+
+	i = 0;
+	num = 0;
+	c = es_getBufAddr(s);
+	while(i < s->lenStr && isxdigit(c[i])) {
+		if(isdigit(c[i]))
+			num = num * 16 + c[i] - '0';
+		else
+			num = num * 16 + tolower(c[i]) - 'a';
+		++i;
+	}
+	return num;
+}
+/*end helpers to es_str2num */
+
+long long
+es_str2num(es_str_t *s)
+{
+	long long num;
+	unsigned char *c;
+
+	if(s->lenStr == 0) {
+		num = 0;
+		goto done;
+	}
+
+	num = 0;
+	c = es_getBufAddr(s);
+	if(c[0] == '-') {
+		num = -es_str2num_dec(s, 1);
+	} else if(c[0] == '0') {
+		if(s->lenStr > 1 && c[1] == 'x') {
+			num = es_str2num_hex(s);
+		} else { 
+			num = es_str2num_oct(s);
+		}
+	} else { /* decimal */
+		num = es_str2num_dec(s, 0);
+	}
+
+done:	return num;
 }
 
 

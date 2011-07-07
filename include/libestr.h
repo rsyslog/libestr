@@ -2,7 +2,7 @@
  * @mainpage
  * libestr - some essentials for string handling (and a bit more)
  *
- * Copyright 2010 by Rainer Gerhards and Adiscon GmbH.
+ * Copyright 2010-2011 by Rainer Gerhards and Adiscon GmbH.
  *
  *
  *//*
@@ -145,6 +145,15 @@ es_str_t* es_newStrFromSubStr(es_str_t *str, es_size_t start, es_size_t len);
  * @returns pointer to new object or NULL on error
  */
 es_str_t* es_newStrFromBuf(char *buf, es_size_t len);
+
+
+/**
+ * Create a new string object from a number.
+ *
+ * @param[in] num number (a long long value to cover all)
+ * @returns pointer to new object or NULL on error
+ */
+es_str_t* es_newStrFromNumber(long long num);
 
 
 /**
@@ -294,6 +303,24 @@ es_addStr(es_str_t **ps1, es_str_t *s2)
  * 	by the caller.
  */
 char *es_str2cstr(es_str_t *s, char *nulEsc);
+
+/**
+ * Obtain a number from the string object. The result is always valid
+ * and the number value is extracted as follows:
+ * - strings starting with "0x" are interpreted as being hex
+ * - strings starting with "0" are interpreted as being octal
+ * - strings starting with "-" are interpreted as negative decimal
+ * - all others are interpreted as postive decimal
+ * - octal and hex string are always unsigned
+ * - the number is made up from the longest sequence of (valid) digits
+ *   from the start of the string. Trailing non-digits are ignored
+ * - if the string does not start with a valid digit, 0 is returned
+ *
+ * @param[in] s string object
+ *
+ * @returns number value as specified
+ */
+long long es_str2num(es_str_t *s);
 
 /**
  * Unescape a string.
