@@ -234,6 +234,13 @@ int es_strncmp(es_str_t *s1, es_str_t *s2, es_size_t len);
 
 
 /**
+ * This is the case insensitive versioon of es_strncmp. See there for
+ * further details.
+*/
+int es_strncasecmp(es_str_t *s1, es_str_t *s2, es_size_t len);
+
+
+/**
  * Check if the second string is contained within the first string.
  *
  * @param[in] s1 frist string
@@ -244,6 +251,13 @@ int es_strncmp(es_str_t *s1, es_str_t *s2, es_size_t len);
  *             is contained right at the start of s1.
 */
 int es_strContains(es_str_t *s1, es_str_t *s2);
+
+
+/**
+ * This is the case-insensitive version of es_strContains. See there
+ * for further information.
+*/
+int es_strCaseContains(es_str_t *s1, es_str_t *s2);
 
 
 /**
@@ -340,12 +354,20 @@ char *es_str2cstr(es_str_t *s, char *nulEsc);
  * - the number is made up from the longest sequence of (valid) digits
  *   from the start of the string. Trailing non-digits are ignored
  * - if the string does not start with a valid digit, 0 is returned
+ * Note that the string always returns the best match as the number
+ * "represented" by the string. For example "1x234" will return the
+ * number 1 and "Test123" will return 0. You can use bSuccess to learn
+ * if the string could be converted completely (1) or only partially (0).
  *
  * @param[in] s string object
+ * @param[out] bSucccess 1 if the conversion was "successful", that means
+ *             the whole string was number, 0 if "unsuccessful", that means
+ *             the string was not a valid number. In this case, the first
+ *             part of the string is treated as number.
  *
  * @returns number value as specified
  */
-long long es_str2num(es_str_t *s);
+long long es_str2num(es_str_t *s, int *bSuccess);
 
 /**
  * Unescape a string.

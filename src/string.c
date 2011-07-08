@@ -265,6 +265,48 @@ es_strncmp(es_str_t *s1, es_str_t *s2, es_size_t len)
 }
 
 
+/* The following is the case-insensitive version of es_strContains. It is
+ * a separate function for speed puprposes. However, the code is almost
+ * identical to es_strContains, so when that one is updated, changes should
+ * be copied over to here as well. The only difference is the tolower()
+ * call, so change propagation is easy ;)
+ */
+int
+es_strncasecmp(es_str_t *s1, es_str_t *s2, es_size_t len)
+{
+	int r;
+	es_size_t i;
+	unsigned char *c1, *c2;
+
+	ASSERT_STR(s1);
+	ASSERT_STR(s2);
+	c1 = es_getBufAddr(s1);
+	c2 = es_getBufAddr(s2);
+	r = 0;	/* assume: strings equal, will be reset if not */
+	for(i = 0 ; i < len ; ++i) {
+		if(i >= s1->lenStr) {
+			if(i >= s1->lenStr) {
+				break; /* we are done, match ready */
+			} else {
+				r = -1; /* first string smaller --> less */
+				break;
+			}
+		} else {
+			if(i >= s1->lenStr) {
+				r = 1; /* first string smaller --> greater */
+				break;
+			} else {
+				if(tolower(c1[i]) != tolower(c2[i])) {
+					r = tolower(c1[i]) - tolower(c2[i]);
+					break;
+				}
+			}
+		}
+	}
+	return r;
+}
+
+
 int
 es_strContains(es_str_t *s1, es_str_t *s2)
 {
@@ -285,6 +327,44 @@ es_strContains(es_str_t *s1, es_str_t *s2)
 	for(i = 0 ; i < max ; ++i) {
 		for(j = 0 ; j < s2->lenStr; ++j) {
 			if(c1[i+j] != c2[j])
+				break;
+		}
+		if(j == s2->lenStr) {
+			r = i;
+			break;
+		}
+	}
+
+done:	return r;
+}
+
+
+/* The following is the case-insensitive version of es_strContains. It is
+ * a separate function for speed puprposes. However, the code is almost
+ * identical to es_strContains, so when that one is updated, changes should
+ * be copied over to here as well. The only difference is the tolower()
+ * call, so change propagation is easy ;)
+ */
+int
+es_strCaseContains(es_str_t *s1, es_str_t *s2)
+{
+	es_size_t i, j;
+	es_size_t max;
+	unsigned char *c1, *c2;
+	int r;
+	
+	r = -1;
+	if(s2->lenStr > s1->lenStr) {
+		/* can not be contained ;) */
+		goto done;
+	}
+
+	c1 = es_getBufAddr(s1);
+	c2 = es_getBufAddr(s2);
+	max = s1->lenStr - s2->lenStr + 1;
+	for(i = 0 ; i < max ; ++i) {
+		for(j = 0 ; j < s2->lenStr; ++j) {
+			if(tolower(c1[i+j]) != tolower(c2[j]))
 				break;
 		}
 		if(j == s2->lenStr) {
@@ -395,8 +475,8 @@ done:
 
 /*helpers to es_str2num */
 /* startindex is provided for decimal to cover '-' */
-long long
-es_str2num_dec(es_str_t *s, unsigned i)
+static inline long long
+es_str2num_dec(es_str_t *s, unsigned i, int *bSuccess)
 {
 	long long num;
 	unsigned char *c;
@@ -407,10 +487,11 @@ es_str2num_dec(es_str_t *s, unsigned i)
 		num = num * 10 + c[i] - '0';
 		++i;
 	}
+	*bSuccess = (i == s->lenStr) ? 1 : 0;
 	return num;
 }
-long long
-es_str2num_oct(es_str_t *s)
+static inline long long
+es_str2num_oct(es_str_t *s, int *bSuccess)
 {
 	long long num;
 	unsigned char *c;
@@ -423,10 +504,11 @@ es_str2num_oct(es_str_t *s)
 		num = num * 8 + c[i] - '0';
 		++i;
 	}
+	*bSuccess = (i == s->lenStr) ? 1 : 0;
 	return num;
 }
-long long
-es_str2num_hex(es_str_t *s)
+static inline long long
+es_str2num_hex(es_str_t *s, int *bSuccess)
 {
 	long long num;
 	unsigned char *c;
@@ -442,33 +524,35 @@ es_str2num_hex(es_str_t *s)
 			num = num * 16 + tolower(c[i]) - 'a';
 		++i;
 	}
+	*bSuccess = (i == s->lenStr) ? 1 : 0;
 	return num;
 }
 /*end helpers to es_str2num */
 
 long long
-es_str2num(es_str_t *s)
+es_str2num(es_str_t *s, int *bSuccess)
 {
 	long long num;
 	unsigned char *c;
 
 	if(s->lenStr == 0) {
 		num = 0;
+		*bSuccess = 0;
 		goto done;
 	}
 
 	num = 0;
 	c = es_getBufAddr(s);
 	if(c[0] == '-') {
-		num = -es_str2num_dec(s, 1);
+		num = -es_str2num_dec(s, 1, bSuccess);
 	} else if(c[0] == '0') {
 		if(s->lenStr > 1 && c[1] == 'x') {
-			num = es_str2num_hex(s);
+			num = es_str2num_hex(s, bSuccess);
 		} else { 
-			num = es_str2num_oct(s);
+			num = es_str2num_oct(s, bSuccess);
 		}
 	} else { /* decimal */
-		num = es_str2num_dec(s, 0);
+		num = es_str2num_dec(s, 0, bSuccess);
 	}
 
 done:	return num;

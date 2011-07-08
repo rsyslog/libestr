@@ -4,7 +4,9 @@ Version 0.1.1 (rgerhards), 2011-07-??
   * es_newStrFromNumber(),
   * es_str2num()
   * es_strncmp()
+  * es_strncasecmp()
   * es_strContains()
+  * es_strCaseContains()
 ----------------------------------------------------------------------
 Version 0.1.0 (rgerhards), 2010-12-09
 Initial public release.
