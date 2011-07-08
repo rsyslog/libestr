@@ -229,6 +229,73 @@ es_strbufcmp(es_str_t *s, unsigned char *buf, es_size_t lenBuf)
 	return r;
 }
 
+int
+es_strncmp(es_str_t *s1, es_str_t *s2, es_size_t len)
+{
+	int r;
+	es_size_t i;
+	unsigned char *c1, *c2;
+
+	ASSERT_STR(s1);
+	ASSERT_STR(s2);
+	c1 = es_getBufAddr(s1);
+	c2 = es_getBufAddr(s2);
+	r = 0;	/* assume: strings equal, will be reset if not */
+	for(i = 0 ; i < len ; ++i) {
+		if(i >= s1->lenStr) {
+			if(i >= s1->lenStr) {
+				break; /* we are done, match ready */
+			} else {
+				r = -1; /* first string smaller --> less */
+				break;
+			}
+		} else {
+			if(i >= s1->lenStr) {
+				r = 1; /* first string smaller --> greater */
+				break;
+			} else {
+				if(c1[i] != c2[i]) {
+					r = c1[i] - c2[i];
+					break;
+				}
+			}
+		}
+	}
+	return r;
+}
+
+
+int
+es_strContains(es_str_t *s1, es_str_t *s2)
+{
+	es_size_t i, j;
+	es_size_t max;
+	unsigned char *c1, *c2;
+	int r;
+	
+	r = -1;
+	if(s2->lenStr > s1->lenStr) {
+		/* can not be contained ;) */
+		goto done;
+	}
+
+	c1 = es_getBufAddr(s1);
+	c2 = es_getBufAddr(s2);
+	max = s1->lenStr - s2->lenStr + 1;
+	for(i = 0 ; i < max ; ++i) {
+		for(j = 0 ; j < s2->lenStr; ++j) {
+			if(c1[i+j] != c2[j])
+				break;
+		}
+		if(j == s2->lenStr) {
+			r = i;
+			break;
+		}
+	}
+
+done:	return r;
+}
+
 
 int
 es_addChar(es_str_t **ps, unsigned char c)

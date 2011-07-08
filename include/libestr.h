@@ -222,6 +222,31 @@ es_strcmp(es_str_t *s1, es_str_t *s2)
 
 
 /**
+ * Compare two string objects, but only the first n characters.
+ * Semantics are the same as strncmp().
+ *
+ * @param[in] s1 frist string
+ * @param[in] s2 second string
+ * @param[in] len number of characters to compare
+ * @returns 0 if equal, negative if s1<s2, positive if s1>s2
+*/
+int es_strncmp(es_str_t *s1, es_str_t *s2, es_size_t len);
+
+
+/**
+ * Check if the second string is contained within the first string.
+ *
+ * @param[in] s1 frist string
+ * @param[in] s2 second string
+ * @returns -1 if s2 is not contained in s1, otherwise the offset
+ *             of the first location where it is contained. This is
+ *             zero-based, so 0 as return indicates everthing OK and s2
+ *             is contained right at the start of s1.
+*/
+int es_strContains(es_str_t *s1, es_str_t *s2);
+
+
+/**
  * A macro to compare a string against a constant C string
  */
 #define es_strconstcmp(str, constcstr) \
