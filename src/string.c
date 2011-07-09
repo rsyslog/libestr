@@ -487,7 +487,8 @@ es_str2num_dec(es_str_t *s, unsigned i, int *bSuccess)
 		num = num * 10 + c[i] - '0';
 		++i;
 	}
-	*bSuccess = (i == s->lenStr) ? 1 : 0;
+	if(bSuccess != NULL)
+		*bSuccess = (i == s->lenStr) ? 1 : 0;
 	return num;
 }
 static inline long long
@@ -504,7 +505,8 @@ es_str2num_oct(es_str_t *s, int *bSuccess)
 		num = num * 8 + c[i] - '0';
 		++i;
 	}
-	*bSuccess = (i == s->lenStr) ? 1 : 0;
+	if(bSuccess != NULL)
+		*bSuccess = (i == s->lenStr) ? 1 : 0;
 	return num;
 }
 static inline long long
@@ -524,7 +526,8 @@ es_str2num_hex(es_str_t *s, int *bSuccess)
 			num = num * 16 + tolower(c[i]) - 'a';
 		++i;
 	}
-	*bSuccess = (i == s->lenStr) ? 1 : 0;
+	if(bSuccess != NULL)
+		*bSuccess = (i == s->lenStr) ? 1 : 0;
 	return num;
 }
 /*end helpers to es_str2num */
@@ -662,4 +665,13 @@ es_unescapeStr(es_str_t *s)
 		}
 		s->lenStr = iDst;
 	}
+}
+
+void
+es_tolower(es_str_t *s)
+{
+	es_size_t i;
+
+	for(i = 0 ; i < s->lenStr ; ++i)
+		es_getBufAddr(s)[i] = tolower(es_getBufAddr(s)[i]);
 }

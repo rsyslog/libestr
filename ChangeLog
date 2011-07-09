@@ -7,6 +7,7 @@ Version 0.1.1 (rgerhards), 2011-07-??
   * es_strncasecmp()
   * es_strContains()
   * es_strCaseContains()
+  * es_tolower()
 ----------------------------------------------------------------------
 Version 0.1.0 (rgerhards), 2010-12-09
 Initial public release.

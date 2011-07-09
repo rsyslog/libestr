@@ -175,7 +175,6 @@ es_emptyStr(es_str_t *str)
 }
 
 
-
 /**
  * Duplicate a str.
  * Currently, the string is actually duplicated. May be changed to
@@ -205,6 +204,15 @@ es_strdup(es_str_t *str)
 */
 int es_strbufcmp(es_str_t *s, unsigned char *b, es_size_t len);
 
+
+/**
+ * Convert a string to lower case. Once converted, this can not be
+ * undone. If the caller needs the original string, it must create
+ * a copy before calling tolower.
+ *
+ * @param[in] s string object to be converted
+ */
+void es_tolower(es_str_t *s);
 
 /**
  * Compare two string objects.
@@ -363,7 +371,8 @@ char *es_str2cstr(es_str_t *s, char *nulEsc);
  * @param[out] bSucccess 1 if the conversion was "successful", that means
  *             the whole string was number, 0 if "unsuccessful", that means
  *             the string was not a valid number. In this case, the first
- *             part of the string is treated as number.
+ *             part of the string is treated as number. If the caller sets
+ *             bSuccess to NULL, no conversion state information is returned.
  *
  * @returns number value as specified
  */
