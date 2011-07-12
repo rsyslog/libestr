@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------
-Version 0.1.1 (rgerhards), 2011-07-??
+Version 0.1.1 (rgerhards), 2011-07-12
 - added new API functions:
   * es_newStrFromNumber(),
   * es_str2num()
