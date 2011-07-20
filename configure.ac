@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([libestr], [0.1.1], [rgerhards@adiscon.com])
+AC_INIT([libestr], [0.1.2], [rgerhards@adiscon.com])
 AM_INIT_AUTOMAKE
 AM_SILENT_RULES([yes])
 AC_CONFIG_SRCDIR([src/libestr.c])

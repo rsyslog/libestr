@@ -204,6 +204,10 @@ es_strdup(es_str_t *str)
 */
 int es_strbufcmp(es_str_t *s, unsigned char *b, es_size_t len);
 
+/** Case-insensitive version of es_strcasebufcmp.
+ */
+int es_strcasebufcmp(es_str_t *s, unsigned char *b, es_size_t len);
+
 
 /**
  * Convert a string to lower case. Once converted, this can not be
@@ -228,6 +232,14 @@ es_strcmp(es_str_t *s1, es_str_t *s2)
 	return es_strbufcmp(s1, es_getBufAddr(s2), s2->lenStr);
 }
 
+/** Case-insensitive version of es_strcmp.
+ */
+static inline int
+es_strcasecmp(es_str_t *s1, es_str_t *s2)
+{
+	return es_strcasebufcmp(s1, es_getBufAddr(s2), s2->lenStr);
+}
+
 
 /**
  * Compare two string objects, but only the first n characters.
@@ -242,7 +254,7 @@ int es_strncmp(es_str_t *s1, es_str_t *s2, es_size_t len);
 
 
 /**
- * This is the case insensitive versioon of es_strncmp. See there for
+ * This is the case insensitive version of es_strncmp. See there for
  * further details.
 */
 int es_strncasecmp(es_str_t *s1, es_str_t *s2, es_size_t len);

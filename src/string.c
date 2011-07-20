@@ -229,6 +229,38 @@ es_strbufcmp(es_str_t *s, unsigned char *buf, es_size_t lenBuf)
 	return r;
 }
 
+
+/* The following is the case-insensitive version of es_strbufcmp. It is
+ * a separate function for speed puprposes. However, the code is almost
+ * identical to es_strbufcmp, so when that one is updated, changes should
+ * be copied over to here as well. The only difference is the tolower()
+ * call, so change propagation is easy ;)
+ */
+int
+es_strcasebufcmp(es_str_t *s, unsigned char *buf, es_size_t lenBuf)
+{
+	int r;
+	es_size_t i;
+	unsigned char *c;
+
+	ASSERT_STR(s);
+	assert(buf != NULL);
+	if(s->lenStr < lenBuf)
+		r = -1;
+	else if(s->lenStr > lenBuf)
+		r = 1;
+	else {
+		c = es_getBufAddr(s);
+		r = 0;	/* assume: strings equal, will be reset if not */
+		for(i = 0 ; i < s->lenStr ; ++i) {
+			if(tolower(c[i]) != tolower(buf[i])) {
+				r = tolower(c[i]) - tolower(buf[i]);
+				break;
+			}
+		}
+	}
+	return r;
+}
 int
 es_strncmp(es_str_t *s1, es_str_t *s2, es_size_t len)
 {
