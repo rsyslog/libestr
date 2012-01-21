@@ -3,6 +3,8 @@ Version 0.1.2 (rgerhards), 2011-07-??
 - added new API functions:
   * es_strcasebufcmp(),
   * es_strcasecmp(),
+- bugfix: license doc COPYING was accidently overwritten, now LGPL
+  again (thanks to John Back for alerting me!)
 ----------------------------------------------------------------------
 Version 0.1.1 (rgerhards), 2011-07-12
 - added new API functions:
