@@ -45,11 +45,6 @@ AC_FUNC_MALLOC
 #AC_TYPE_SIGNAL
 #AC_CHECK_FUNCS([])
 
-LIBESTR_CFLAGS="-I\$(top_srcdir)/include"
-LIBESTR_LIBS="\$(top_builddir)/src/libestr.la"
-AC_SUBST(LIBESTR_CFLAGS)
-AC_SUBST(LIBESTR_LIBS)
-
 # enable/disable the testbench (e.g. because some important parts
 # are missing)
 AC_ARG_ENABLE(testbench,

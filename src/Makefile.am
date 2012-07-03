@@ -1,8 +1,8 @@
 
+AM_CPPFLAGS = -I${top_srcdir}/include
 AM_CFLAGS = ${my_CFLAGS}
 
 DEBUG = -g
-LIBESTR_CFLAGS=-I$(top_srcdir)/include
 
 # Uncomment for debugging TODO: configure option
 #AM_CFLAGS += $(DEBUG)
@@ -13,7 +13,6 @@ libestr_la_SOURCES = \
 	libestr.c \
 	string.c
 
-libestr_la_CPPFLAGS = $(LIBESTR_CFLAGS)
 libestr_la_LIBADD = 
 libestr_la_LDFLAGS = -version-info 0:0:0
 
