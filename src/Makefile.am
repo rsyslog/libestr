@@ -1,8 +1,11 @@
+
+AM_CFLAGS = ${my_CFLAGS}
+
 DEBUG = -g
 LIBESTR_CFLAGS=-I$(top_srcdir)/include
 
 # Uncomment for debugging TODO: configure option
-#CFLAGS += $(DEBUG)
+#AM_CFLAGS += $(DEBUG)
 
 lib_LTLIBRARIES = libestr.la
 
