@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------
-Version 0.1.2 (rgerhards), 2012-07-04
+Version 0.1.3 (rgerhards), 2012-07-04
 - bugfix: fixed some problems in build system
   Thanks to Jan Engelhardt for the patches
 - bugfix: license doc COPYING was accidently overwritten, now LGPL
