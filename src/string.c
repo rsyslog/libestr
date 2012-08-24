@@ -117,7 +117,7 @@ done:
 
 
 es_str_t*
-es_newStrFromCStr(char *cstr, es_size_t len)
+es_newStrFromCStr(const char *cstr, es_size_t len)
 {
 	es_str_t *s;
 	assert(strlen(cstr) == len);

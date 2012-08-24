@@ -117,7 +117,7 @@ void es_deleteStr(es_str_t *str);
  *  		the length is known and we use this as a time-safer (if present).
  * @returns pointer to new object or NULL on error
  */
-es_str_t* es_newStrFromCStr(char *cstr, es_size_t len);
+es_str_t* es_newStrFromCStr(const char *cstr, es_size_t len);
 
 
 /**
