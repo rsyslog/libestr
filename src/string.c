@@ -654,6 +654,9 @@ doUnescape(unsigned char *c, es_size_t lenStr, es_size_t *iSrc, es_size_t iDst)
 		case '?':
 			c[iDst] = '?';
 			break;
+		case '\\':
+			c[iDst] = '\\';
+			break;
 		case 'x':
 			if(    (*iSrc)+2 == lenStr
 			   || !isxdigit(c[(*iSrc)+1])
@@ -665,7 +668,13 @@ doUnescape(unsigned char *c, es_size_t lenStr, es_size_t *iSrc, es_size_t iDst)
 			c[iDst] = (hexDigitVal(c[(*iSrc)+1]) << 4) +
 				  hexDigitVal(c[(*iSrc)+2]);
 			*iSrc += 2;
-		/* TODO: other sequences */
+		default:
+			/* error, incomplete escape, use as is.  Ideally we
+			   should reject it instead, to allow for future
+			   enhancements, but that would break ABI of
+			   es_unescapeStr. */
+			c[iDst] = '\\';
+			--(*iSrc);
 		}
 	} else {
 		/* regular character */
