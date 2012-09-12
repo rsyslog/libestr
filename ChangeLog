@@ -1,4 +1,8 @@
 ----------------------------------------------------------------------
+Version 0.1.4 2012-09-13
+- bugfix: '\\' escape was not recognized when unescaping strings
+  Thanks to Miloslav Trmač for the patch.
+----------------------------------------------------------------------
 Version 0.1.3 (rgerhards), 2012-07-04
 - bugfix: fixed some problems in build system
   Thanks to Jan Engelhardt for the patches
