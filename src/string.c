@@ -275,14 +275,14 @@ es_strncmp(es_str_t *s1, es_str_t *s2, es_size_t len)
 	r = 0;	/* assume: strings equal, will be reset if not */
 	for(i = 0 ; i < len ; ++i) {
 		if(i >= s1->lenStr) {
-			if(i >= s1->lenStr) {
+			if(i >= s2->lenStr) {
 				break; /* we are done, match ready */
 			} else {
 				r = -1; /* first string smaller --> less */
 				break;
 			}
 		} else {
-			if(i >= s1->lenStr) {
+			if(i >= s2->lenStr) {
 				r = 1; /* first string smaller --> greater */
 				break;
 			} else {

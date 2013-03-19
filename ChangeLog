@@ -1,4 +1,9 @@
 ----------------------------------------------------------------------
+Version 0.1.5 2013-03-19
+- bugfix: es_strncmp() did not work correctly
+  Thanks to Philippe Muller for the patch.
+  closes: http://bugzilla.adiscon.com/show_bug.cgi?id=424
+----------------------------------------------------------------------
 Version 0.1.4 2012-09-13
 - bugfix: '\\' escape was not recognized when unescaping strings
   Thanks to Miloslav Trmač for the patch.
