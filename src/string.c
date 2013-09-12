@@ -668,6 +668,7 @@ doUnescape(unsigned char *c, es_size_t lenStr, es_size_t *iSrc, es_size_t iDst)
 			c[iDst] = (hexDigitVal(c[(*iSrc)+1]) << 4) +
 				  hexDigitVal(c[(*iSrc)+2]);
 			*iSrc += 2;
+			break;
 		default:
 			/* error, incomplete escape, use as is.  Ideally we
 			   should reject it instead, to allow for future
