@@ -676,6 +676,7 @@ doUnescape(unsigned char *c, es_size_t lenStr, es_size_t *iSrc, es_size_t iDst)
 			   es_unescapeStr. */
 			c[iDst] = '\\';
 			--(*iSrc);
+			break;
 		}
 	} else {
 		/* regular character */
