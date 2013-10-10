@@ -212,20 +212,20 @@ es_strbufcmp(es_str_t *s, unsigned char *buf, es_size_t lenBuf)
 
 	ASSERT_STR(s);
 	assert(buf != NULL);
-	if(s->lenStr < lenBuf)
-		r = -1;
-	else if(s->lenStr > lenBuf)
-		r = 1;
-	else {
-		c = es_getBufAddr(s);
-		r = 0;	/* assume: strings equal, will be reset if not */
-		for(i = 0 ; i < s->lenStr ; ++i) {
-			if(c[i] != buf[i]) {
-				r = c[i] - buf[i];
-				break;
-			}
+	c = es_getBufAddr(s);
+	r = 0;	/* assume: strings equal, will be reset if not */
+	for(i = 0 ; i < s->lenStr ; ++i) {
+		if(i == lenBuf) {
+			r = -1;
+			break;
+		}
+		if(c[i] != buf[i]) {
+			r = c[i] - buf[i];
+			break;
 		}
 	}
+	if(r == 0 && s->lenStr < lenBuf)
+		r = 1;
 	return r;
 }
 
@@ -245,20 +245,20 @@ es_strcasebufcmp(es_str_t *s, unsigned char *buf, es_size_t lenBuf)
 
 	ASSERT_STR(s);
 	assert(buf != NULL);
-	if(s->lenStr < lenBuf)
-		r = -1;
-	else if(s->lenStr > lenBuf)
-		r = 1;
-	else {
-		c = es_getBufAddr(s);
-		r = 0;	/* assume: strings equal, will be reset if not */
-		for(i = 0 ; i < s->lenStr ; ++i) {
-			if(tolower(c[i]) != tolower(buf[i])) {
-				r = tolower(c[i]) - tolower(buf[i]);
-				break;
-			}
+	c = es_getBufAddr(s);
+	r = 0;	/* assume: strings equal, will be reset if not */
+	for(i = 0 ; i < s->lenStr ; ++i) {
+		if(i == lenBuf) {
+			r = -1;
+			break;
+		}
+		if(tolower(c[i]) != tolower(buf[i])) {
+			r = tolower(c[i]) - tolower(buf[i]);
+			break;
 		}
 	}
+	if(r == 0 && s->lenStr < lenBuf)
+		r = 1;
 	return r;
 }
 int

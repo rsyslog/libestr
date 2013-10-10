@@ -1,4 +1,16 @@
 ----------------------------------------------------------------------
+Version 0.1.7 2013-10-10
+- bugfix: invalid comparison results for different-length strings
+  es_strcmp, es_strcasecmp, es_strbufcmp, and es_strcasebufcmp
+  returned incorrect results if the first string was smaller than
+  the second. In that case, the first string was always assumed
+  to be lexially lower than the second. If the second string was
+  larger than the first, the same issue occured. This did not affect
+  equal comparisons, but LT/GT checks lead to invalid result, with
+  potentially harsh consequences (e.g. qsort() did not work properly).
+  This bug is present for a very long time, potentially down to the
+  initial implementation of libestr.
+----------------------------------------------------------------------
 Version 0.1.6 2013-09-12
 - bugfix: ascii hex code escapes did not work
   Thanks to Rene Kalff for the patch
