@@ -1,4 +1,3 @@
-#include <stdio.h>
 /**
  * @file string.c
  * Implements string handling
@@ -217,7 +216,7 @@ es_strbufcmp(es_str_t *s, unsigned char *buf, es_size_t lenBuf)
 	r = 0;	/* assume: strings equal, will be reset if not */
 	for(i = 0 ; i < s->lenStr ; ++i) {
 		if(i == lenBuf) {
-			r = 1;
+			r = 1; /* strings are so far equal, but second string is smaller */
 			break;
 		}
 		if(c[i] != buf[i]) {
@@ -226,7 +225,7 @@ es_strbufcmp(es_str_t *s, unsigned char *buf, es_size_t lenBuf)
 		}
 	}
 	if(r == 0 && s->lenStr < lenBuf)
-		r = -1;
+		r = -1; /* strings are so far equal, but first string is smaller */
 	return r;
 }
 
