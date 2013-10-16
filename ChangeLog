@@ -1,4 +1,8 @@
 ----------------------------------------------------------------------
+Version 0.1.8 2013-10-16
+- bugfix: previous fix for string comparisons did not work properly
+  Thanks to Tomas Heinrich for alerting us
+----------------------------------------------------------------------
 Version 0.1.7 2013-10-10
 - bugfix: invalid comparison results for different-length strings
   es_strcmp, es_strcasecmp, es_strbufcmp, and es_strcasebufcmp
