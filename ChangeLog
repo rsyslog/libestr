@@ -1,4 +1,8 @@
 ----------------------------------------------------------------------
+Version 0.1.9 2013-10-28
+- bugfix: invalid number string when creating string from integer 
+  Thanks to Pavel Levshin for the patch
+----------------------------------------------------------------------
 Version 0.1.8 2013-10-16
 - bugfix: previous fix for string comparisons did not work properly
   Thanks to Tomas Heinrich for alerting us
