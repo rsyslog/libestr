@@ -164,7 +164,7 @@ es_newStrFromNumber(long long num)
 	/* now create the actual string */
 	if((s = es_newStr(i)) == NULL) goto done;
 	s->lenStr = i;
-	for(j = 0 ; --i >= 0 ; ++j, --i) {
+	for(j = 0 ; --i >= 0 ; ++j) {
 		es_getBufAddr(s)[j] = numbuf[i];
 	}
 
