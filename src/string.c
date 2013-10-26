@@ -151,7 +151,13 @@ es_newStrFromNumber(long long num)
 {
 	char numbuf[20];	/* 2^64 has 20 digits ;) */
 	int i,j;
+	char minus = '\0';
 	es_str_t *s;
+	
+	if (num < 0) {
+	    minus = '-';
+	    num = -num;
+	}
 	
 	/* generate string (reversed) */
 	for(i = 0 ; num != 0 ; ++i) {
@@ -160,11 +166,13 @@ es_newStrFromNumber(long long num)
 	}
 	if(i == 0)
 		numbuf [i++] = '0';
+	if (minus != '\0')
+		numbuf[i++] = minus;
 
 	/* now create the actual string */
 	if((s = es_newStr(i)) == NULL) goto done;
 	s->lenStr = i;
-	for(j = 0 ; --i >= 0 ; ++j, --i) {
+	for(j = 0 ; --i >= 0 ; ++j) {
 		es_getBufAddr(s)[j] = numbuf[i];
 	}
 
