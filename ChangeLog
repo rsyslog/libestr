@@ -1,4 +1,8 @@
 ----------------------------------------------------------------------
+Version 0.1.10 2014-??-??
+- lower autotools requirement to 2.59
+  permits to build on stock RHEL/CENTOS 5
+----------------------------------------------------------------------
 Version 0.1.9 2013-10-28
 - bugfix: invalid number string when creating string from integer 
   Thanks to Pavel Levshin for the patch
