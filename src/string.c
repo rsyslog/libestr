@@ -166,7 +166,15 @@ es_newStrFromNumber(long long num)
 	int i,j;
 	char minus = '\0';
 	es_str_t *s;
+	long long upperBorder = -9223372036854775807LL;
+	--upperBorder; /* handle number in C90 and newer modes */
 	
+	/* handle border case */
+	if(num == upperBorder) {
+		s = es_newStrFromCStr("-9223372036854775808", 20);
+		goto done;
+	}
+
 	if (num < 0) {
 	    minus = '-';
 	    num = -num;
@@ -199,6 +207,10 @@ es_newStrFromSubStr(es_str_t *str, es_size_t start, es_size_t len)
 {
 	es_str_t *s;
 	
+	if(start+len < start) {
+		s = NULL;
+		goto done;
+	}
 	if((s = es_newStr(len)) == NULL) goto done;
 
 	if(start > es_strlen(str))
@@ -461,6 +473,10 @@ es_addBuf(es_str_t **ps1, char *buf, es_size_t lenBuf)
 	}
 
 	newlen = s1->lenStr + lenBuf;
+	if(newlen != (size_t) s1->lenStr + (size_t) lenBuf) {
+		r = ENOMEM;
+		goto done;
+	}
 	if(s1->lenBuf < newlen) {
 		/* we need to extend */
 		if((r = es_extendBuf(ps1, newlen - s1->lenBuf)) != 0) goto done;
@@ -483,7 +499,8 @@ es_str2cstr(es_str_t *s, char *nulEsc)
 	char *cstr;
 	es_size_t lenEsc;
 	int nbrNUL;
-	es_size_t i, iDst;
+	es_size_t i;
+	size_t iDst;
 	unsigned char *c;
 
 	/* detect number of NULs inside string */
