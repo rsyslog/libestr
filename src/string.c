@@ -589,7 +589,7 @@ es_str2num_hex(es_str_t *s, int *bSuccess)
 
 	i = 0;
 	num = 0;
-	c = es_getBufAddr(s);
+	c = es_getBufAddr(s) + 2;
 	while(i < s->lenStr && isxdigit(c[i])) {
 		if(isdigit(c[i]))
 			num = num * 16 + c[i] - '0';
