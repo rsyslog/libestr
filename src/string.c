@@ -68,17 +68,27 @@ es_extendBuf(es_str_t **ps, es_size_t minNeeded)
 	int r = 0;
 	es_str_t *s = *ps;
 	es_size_t newSize;
+	es_size_t newAlloc;
 
 	ASSERT_STR(s);
-	newSize = 2 * s->lenBuf;
 	/* first compute the new size needed */
 	if(minNeeded > s->lenBuf) {
 		newSize = s->lenBuf + minNeeded;
 	} else {
 		newSize = 2 * s->lenBuf;
 	}
+	if(newSize < minNeeded) { /* overflow? */
+		r = ENOMEM;
+		goto done;
+	}
 
-	if((s = (es_str_t*) realloc(s, newSize + sizeof(es_str_t))) == NULL) {
+	newAlloc = newSize + sizeof(es_str_t);
+	if(newAlloc < newSize) { /* overflow? */
+		r = ENOMEM;
+		goto done;
+	}
+
+	if((s = (es_str_t*) realloc(s, newAlloc)) == NULL) {
 		r = errno;
 		goto done;
 	}
@@ -102,6 +112,10 @@ es_newStr(es_size_t lenhint)
 	if(lenhint & 0x07)
 		lenhint = lenhint - (lenhint & 0x07) + 8;
 
+	if(sizeof(es_str_t) + lenhint < lenhint) { /* overflow? */
+		s = NULL;
+		goto done;
+	}
 	if((s = malloc(sizeof(es_str_t) + lenhint)) == NULL)
 		goto done;
 
@@ -120,7 +134,6 @@ es_str_t*
 es_newStrFromCStr(const char *cstr, es_size_t len)
 {
 	es_str_t *s;
-	assert(strlen(cstr) == len);
 	
 	if((s = es_newStr(len)) == NULL) goto done;
 	memcpy(es_getBufAddr(s), cstr, len);
