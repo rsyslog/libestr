@@ -1,4 +1,3 @@
-#include <stdio.h>
 /**
  * @file string.c
  * Implements string handling
@@ -706,7 +705,6 @@ doUnescape(unsigned char *c, es_size_t lenStr, es_size_t *iSrc, es_size_t iDst)
 			   || !isxdigit(c[(*iSrc)+1])
 			   || !isxdigit(c[(*iSrc)+2])) {
 				/* error, incomplete escape, use as is */
-				printf("error: incomplete 2 x escape\n");
 				c[iDst] = '\\';
 				--(*iSrc);
 			}
