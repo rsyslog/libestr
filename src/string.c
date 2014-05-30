@@ -528,7 +528,7 @@ es_str2cstr(es_str_t *s, char *nulEsc)
 			if(c[i] == 0x00) {
 				if(lenEsc == 1) {
 					cstr[iDst++] = *nulEsc;
-				} else {
+				} else if(lenEsc > 1) {
 					memcpy(cstr + iDst, nulEsc, lenEsc);
 					iDst += lenEsc;
 				}
