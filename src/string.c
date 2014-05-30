@@ -614,7 +614,6 @@ es_str2num(es_str_t *s, int *bSuccess)
 		goto done;
 	}
 
-	num = 0;
 	c = es_getBufAddr(s);
 	if(c[0] == '-') {
 		num = -es_str2num_dec(s, 1, bSuccess);
