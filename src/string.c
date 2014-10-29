@@ -237,7 +237,7 @@ es_deleteStr(es_str_t *s)
 
 
 int
-es_strbufcmp(es_str_t *s, unsigned char *buf, es_size_t lenBuf)
+es_strbufcmp(es_str_t *s, const unsigned char *buf, es_size_t lenBuf)
 {
 	int r;
 	es_size_t i;
@@ -270,7 +270,7 @@ es_strbufcmp(es_str_t *s, unsigned char *buf, es_size_t lenBuf)
  * call, so change propagation is easy ;)
  */
 int
-es_strcasebufcmp(es_str_t *s, unsigned char *buf, es_size_t lenBuf)
+es_strcasebufcmp(es_str_t *s, const unsigned char *buf, es_size_t lenBuf)
 {
 	int r;
 	es_size_t i;
@@ -443,7 +443,7 @@ done:	return r;
 
 
 int
-es_addChar(es_str_t **ps, unsigned char c)
+es_addChar(es_str_t **ps, const unsigned char c)
 {
 	int r = 0;
 
@@ -460,7 +460,7 @@ done:
 
 
 int
-es_addBuf(es_str_t **ps1, char *buf, es_size_t lenBuf)
+es_addBuf(es_str_t **ps1, const char *buf, es_size_t lenBuf)
 {
 	int r;
 	es_size_t newlen;
@@ -494,7 +494,7 @@ done:
 
 
 char *
-es_str2cstr(es_str_t *s, char *nulEsc)
+es_str2cstr(es_str_t *s, const char *nulEsc)
 {
 	char *cstr;
 	es_size_t lenEsc;
