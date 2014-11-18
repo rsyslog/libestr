@@ -202,11 +202,11 @@ es_strdup(es_str_t *str)
  * @param[in] len lenght of buffer
  * @returns 0 if equal, negative if s<cs, positive if s>cs
 */
-int es_strbufcmp(es_str_t *s, unsigned char *b, es_size_t len);
+int es_strbufcmp(es_str_t *s, const unsigned char *b, es_size_t len);
 
 /** Case-insensitive version of es_strcasebufcmp.
  */
-int es_strcasebufcmp(es_str_t *s, unsigned char *b, es_size_t len);
+int es_strcasebufcmp(es_str_t *s, const unsigned char *b, es_size_t len);
 
 
 /**
@@ -305,7 +305,7 @@ int es_extendBuf(es_str_t **ps, es_size_t minNeeded);
  * @param[in/out] ps string to be extened (updatedable pointer required!)
  * @returns 0 on success, something else otherwise
  */
-int es_addChar(es_str_t **ps, unsigned char c);
+int es_addChar(es_str_t **ps, const unsigned char c);
 
 
 /**
@@ -318,7 +318,7 @@ int es_addChar(es_str_t **ps, unsigned char c);
  *
  * @returns 0 on success, something else otherwise
  */
-int es_addBuf(es_str_t **ps1, char *buf, es_size_t lenBuf);
+int es_addBuf(es_str_t **ps1, const char *buf, const es_size_t lenBuf);
 
 /**
  * A macro to add a traditional C constant to a string.
@@ -361,7 +361,7 @@ es_addStr(es_str_t **ps1, es_str_t *s2)
  * 	This string is allocated from the dynamic memory pool and must be freed
  * 	by the caller.
  */
-char *es_str2cstr(es_str_t *s, char *nulEsc);
+char *es_str2cstr(es_str_t *s, const char *nulEsc);
 
 /**
  * Obtain a number from the string object. The result is always valid
