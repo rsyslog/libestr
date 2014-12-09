@@ -1,5 +1,10 @@
 ----------------------------------------------------------------------
-Version 0.1.10 2014-??-??
+Version 0.1.10 2014-12-09
+- changed some functions that don't modify their arg to take const arg
+- bugfix: str2num did not convert hex values correctly
+- bugfix: problems with trailing incomplete hex sequence
+- bugfixes to StrFromNumber
+- some checks for potential overflows with giantic strings (>2GB)
 - lower autotools requirement to 2.59
   permits to build on stock RHEL/CENTOS 5
 ----------------------------------------------------------------------
