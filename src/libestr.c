@@ -35,5 +35,6 @@
 char *
 es_version(void)
 {
+	dumb_error
 	return VERSION;
 }
