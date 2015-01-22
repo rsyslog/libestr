@@ -1,4 +1,6 @@
 ----------------------------------------------------------------------
+Version 0.1.11 2015-??-??
+----------------------------------------------------------------------
 Version 0.1.10 2014-12-09
 - changed some functions that don't modify their arg to take const arg
 - bugfix: str2num did not convert hex values correctly
