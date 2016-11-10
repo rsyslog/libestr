@@ -16,6 +16,9 @@ if test "$unamestr" = "AIX"; then
 	LIBS="-lbsd "
 	LDFLAGS="-brtl -bexpall"
 	AC_PREFIX_DEFAULT(/usr)
+	export  ac_cv_func_malloc_0_nonnull=yes
+	export ac_cv_func_realloc_0_nonnull=yes
+
 fi
 # AIXPORT End 
 
