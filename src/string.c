@@ -3,7 +3,7 @@
  * Implements string handling
  *
  * @note: for efficiency reasons, later builds may spread the
- * individual functions across different source modules. I was a 
+ * individual functions across different source modules. I was a
  * bit lazy to do this right now and I am totally unsure if it
  * really is worth the effort.
  *//*
@@ -40,7 +40,7 @@
 #define ERR_ABORT {r = 1; goto done; }
 
 #if 1 /* !defined(NDEBUG) TODO: decide if we want this or not! */
-#	define CHECK_STR 
+#	define CHECK_STR
 #	define ASSERT_STR(s)
 #else
 #	define CHECK_STR
@@ -447,7 +447,7 @@ es_addChar(es_str_t **ps, const unsigned char c)
 {
 	int r = 0;
 
-	if((*ps)->lenStr >= (*ps)->lenBuf) {  
+	if((*ps)->lenStr >= (*ps)->lenBuf) {
 		if((r = es_extendBuf(ps, 1)) != 0) goto done;
 	}
 
@@ -620,7 +620,7 @@ es_str2num(es_str_t *s, int *bSuccess)
 	} else if(c[0] == '0') {
 		if(s->lenStr > 1 && c[1] == 'x') {
 			num = es_str2num_hex(s, bSuccess);
-		} else { 
+		} else {
 			num = es_str2num_oct(s, bSuccess);
 		}
 	} else { /* decimal */
