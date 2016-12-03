@@ -50,7 +50,7 @@ typedef unsigned int es_size_t;
  * overhead on a 64 bit machine!).
  */
 typedef struct
-{	
+{
 	/* word-aligned items */
 	es_size_t lenStr;		/**< actual length of string,
 					    MUST be first element of struct because
@@ -350,7 +350,7 @@ es_addStr(es_str_t **ps1, es_str_t *s2)
  * @note
  * This function has to do a lot of work, and should not be called unless
  * absolutely necessary. If possible, use the native representation of
- * the string object. For example, you can use the buffer address and 
+ * the string object. For example, you can use the buffer address and
  * string length in most i/o calls, if you use the native versions and avoid
  * the C string i/o calls.
  *
