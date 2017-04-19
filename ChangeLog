@@ -2,6 +2,7 @@
 Version 0.1.11 2015-??-??
 - make build on AIX
   Thanks to github user purnimam1 for the patch
+- CI/Travis: now also test on osX
 ----------------------------------------------------------------------
 Version 0.1.10 2014-12-09
 - changed some functions that don't modify their arg to take const arg
