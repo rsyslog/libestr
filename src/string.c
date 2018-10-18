@@ -607,10 +607,10 @@ es_str2num(es_str_t *s, int *bSuccess)
 {
 	long long num;
 	unsigned char *c;
-
 	if(s->lenStr == 0) {
 		num = 0;
-		*bSuccess = 0;
+		if(bSuccess != NULL)
+			*bSuccess = 0;
 		goto done;
 	}
 
