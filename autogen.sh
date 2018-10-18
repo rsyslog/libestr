@@ -3,11 +3,11 @@
 # Licensed under ASL 2.0 (as of email conversation with original
 # author Michael Biebl on 2016-12-04).
 
-srcdir=`dirname $0`
+srcdir=$(dirname $0)
 test -z "$srcdir" && srcdir=.
 
 (test -f $srcdir/configure.ac) || {
-    echo -n "**Error**: Directory "\`$srcdir\'" does not look like the"
+    echo "**Error**: Directory "\`$srcdir\'" does not look like the"
     echo " top-level package directory"
     exit 1
 }
