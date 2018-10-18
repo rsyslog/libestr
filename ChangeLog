@@ -7,6 +7,11 @@ Version 0.1.11 2018-10-23
   This came up when troubleshooting issues on IBM AIX.
 - make build on AIX
   Thanks to github user purnimam1 for the patch
+- bugfix: es_str2num mishandling empty strings
+  If es_str2num() receives an empty string, misadressing happens.
+  Under extreme conditions, this theoretically can lead to a segfault.
+  Thanks to Jan Gerhards for the patch.
+  closes https://github.com/rsyslog/libestr/issues/10
 - CI/Travis: now also test on osX
 ----------------------------------------------------------------------
 Version 0.1.10 2014-12-09
