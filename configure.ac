@@ -63,7 +63,6 @@ AC_SUBST(rt_libs)
 #AC_STRUCT_TM
 
 # Checks for library functions.
-AC_FUNC_MALLOC
 #AC_FUNC_SELECT_ARGTYPES
 #AC_TYPE_SIGNAL
 #AC_CHECK_FUNCS([])
