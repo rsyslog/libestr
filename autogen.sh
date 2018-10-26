@@ -6,7 +6,7 @@
 srcdir=$(dirname $0)
 test -z "$srcdir" && srcdir=.
 
-(test -f $srcdir/configure.ac) || {
+test -f $srcdir/configure.ac || {
     echo "**Error**: Directory "\`$srcdir\'" does not look like the"
     echo " top-level package directory"
     exit 1
