@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([libestr], [0.1.11], [rgerhards@adiscon.com])
+AC_INIT([libestr], [0.1.12.master], [rgerhards@adiscon.com])
 AM_INIT_AUTOMAKE
 # AIXPORT START: Detect the underlying OS
 unamestr=$(uname)

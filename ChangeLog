@@ -1,4 +1,6 @@
 ----------------------------------------------------------------------
+Version 0.1.12 20??-??-??
+----------------------------------------------------------------------
 Version 0.1.11 2018-10-30
 - portability: remove issues associated with AC_FUNC_MALLOC
   This configure.ac macro is known to cause issues and not provide real
