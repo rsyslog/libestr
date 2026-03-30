@@ -34,6 +34,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
+#include <limits.h>
 
 #include "libestr.h"
 
@@ -75,9 +76,13 @@ es_extendBuf(es_str_t **ps, es_size_t minNeeded)
 	if(minNeeded > s->lenBuf) {
 		newSize = s->lenBuf + minNeeded;
 	} else {
-		newSize = 2 * s->lenBuf;
+		if (s->lenBuf > ((es_size_t)-1) / 2) {
+			newSize = (es_size_t)-1;
+		} else {
+			newSize = 2 * s->lenBuf;
+		}
 	}
-	if(newSize < minNeeded) { /* overflow? */
+	if(newSize < minNeeded || newSize < s->lenBuf) { /* overflow? */
 		r = ENOMEM;
 		goto done;
 	}
@@ -88,7 +93,7 @@ es_extendBuf(es_str_t **ps, es_size_t minNeeded)
 		goto done;
 	}
 
-	if((s = (es_str_t*) realloc(s, newAlloc)) == NULL) {
+	if((s = realloc(s, newAlloc)) == NULL) {
 		r = errno;
 		goto done;
 	}
@@ -109,6 +114,10 @@ es_newStr(es_size_t lenhint)
 	/* we round length to a multiple of 8 in the hope to reduce
 	 * memory fragmentation.
 	 */
+	if(lenhint > (es_size_t)-8) { /* overflow check for alignment */
+		s = NULL;
+		goto done;
+	}
 	if(lenhint & 0x07)
 		lenhint = lenhint - (lenhint & 0x07) + 8;
 
@@ -215,7 +224,7 @@ es_newStrFromSubStr(es_str_t *str, es_size_t start, es_size_t len)
 
 	if(start > es_strlen(str))
 		goto done;
-	else if(start + len > es_strlen(str) - 1)
+	else if(start + len > es_strlen(str))
 		len = es_strlen(str) - start;
 
 	memcpy(es_getBufAddr(s), es_getBufAddr(str)+start, len);
@@ -473,7 +482,7 @@ es_addBuf(es_str_t **ps1, const char *buf, es_size_t lenBuf)
 	}
 
 	newlen = s1->lenStr + lenBuf;
-	if(newlen != (size_t) s1->lenStr + (size_t) lenBuf) {
+	if(newlen < s1->lenStr) {
 		r = ENOMEM;
 		goto done;
 	}
@@ -497,7 +506,7 @@ char *
 es_str2cstr(es_str_t *s, const char *nulEsc)
 {
 	char *cstr;
-	es_size_t lenEsc;
+	size_t lenEsc;
 	int nbrNUL;
 	es_size_t i;
 	size_t iDst;
@@ -522,7 +531,17 @@ es_str2cstr(es_str_t *s, const char *nulEsc)
 		 * during creation of the C string.
 		 */
 		lenEsc = (nulEsc == NULL) ? 0 : strlen(nulEsc);
-		if((cstr = malloc(s->lenStr + nbrNUL * (lenEsc - 1) + 1)) == NULL)
+		size_t nbrNUL_sz = (size_t)nbrNUL;
+		size_t lenStr_sz = (size_t)s->lenStr;
+		size_t allocSize = lenStr_sz + 1;
+		if (lenEsc > 1) {
+			if (nbrNUL_sz > (((size_t)-1) - allocSize) / (lenEsc - 1)) {
+				cstr = NULL;
+				goto done;
+			}
+			allocSize += nbrNUL_sz * (lenEsc - 1);
+		}
+		if((cstr = malloc(allocSize)) == NULL)
 			goto done;
 		for(i = iDst = 0 ; i < s->lenStr ; ++i) {
 			if(c[i] == 0x00) {
@@ -546,18 +565,40 @@ done:
 /*helpers to es_str2num */
 /* startindex is provided for decimal to cover '-' */
 static inline long long
-es_str2num_dec(es_str_t *s, unsigned i, int *bSuccess)
+es_str2num_dec(es_str_t *s, unsigned i, int bNegative, int *bSuccess)
 {
 	long long num;
 	unsigned char *c;
+	int digit_val;
+	long long max_div_10 = LLONG_MAX / 10;
+	int max_mod_10 = LLONG_MAX % 10;
+	long long min_div_10 = LLONG_MIN / 10;
+	int min_mod_10 = LLONG_MIN % 10;
 
 	num = 0;
 	c = es_getBufAddr(s);
 	while(i < s->lenStr && isdigit(c[i])) {
-		num = num * 10 + c[i] - '0';
+		digit_val = c[i] - '0';
+		if (bNegative) {
+			if (num < min_div_10 || (num == min_div_10 && -digit_val < min_mod_10)) {
+				num = LLONG_MIN;
+				if (bSuccess != NULL) *bSuccess = 0;
+				while (++i < s->lenStr && isdigit(c[i]));
+				break;
+			}
+			num = num * 10 - digit_val;
+		} else {
+			if (num > max_div_10 || (num == max_div_10 && digit_val > max_mod_10)) {
+				num = LLONG_MAX;
+				if (bSuccess != NULL) *bSuccess = 0;
+				while (++i < s->lenStr && isdigit(c[i]));
+				break;
+			}
+			num = num * 10 + digit_val;
+		}
 		++i;
 	}
-	if(bSuccess != NULL)
+	if(bSuccess != NULL && *bSuccess != 0)
 		*bSuccess = (i == s->lenStr) ? 1 : 0;
 	return num;
 }
@@ -567,15 +608,25 @@ es_str2num_oct(es_str_t *s, int *bSuccess)
 	long long num;
 	unsigned char *c;
 	unsigned i;
+	int digit_val;
+	long long max_div_8 = LLONG_MAX / 8;
+	int max_mod_8 = LLONG_MAX % 8;
 
 	i = 0;
 	num = 0;
 	c = es_getBufAddr(s);
 	while(i < s->lenStr && (c[i] >= '0' && c[i] <= '7')) {
-		num = num * 8 + c[i] - '0';
+		digit_val = c[i] - '0';
+		if (num > max_div_8 || (num == max_div_8 && digit_val > max_mod_8)) {
+			num = LLONG_MAX;
+			if (bSuccess != NULL) *bSuccess = 0;
+			while (++i < s->lenStr && (c[i] >= '0' && c[i] <= '7'));
+			break;
+		}
+		num = num * 8 + digit_val;
 		++i;
 	}
-	if(bSuccess != NULL)
+	if(bSuccess != NULL && *bSuccess != 0)
 		*bSuccess = (i == s->lenStr) ? 1 : 0;
 	return num;
 }
@@ -585,19 +636,26 @@ es_str2num_hex(es_str_t *s, int *bSuccess)
 	long long num;
 	unsigned char *c;
 	unsigned i;
+	int digit_val;
+	long long max_div_16 = LLONG_MAX / 16;
+	int max_mod_16 = LLONG_MAX % 16;
 
-	i = 0;
+	i = 2;
 	num = 0;
-	c = es_getBufAddr(s) + 2;
+	c = es_getBufAddr(s);
 	while(i < s->lenStr && isxdigit(c[i])) {
-		if(isdigit(c[i]))
-			num = num * 16 + c[i] - '0';
-		else
-			num = num * 16 + tolower(c[i]) - 'a';
+		digit_val = isdigit(c[i]) ? (c[i] - '0') : (tolower(c[i]) - 'a' + 10);
+		if (num > max_div_16 || (num == max_div_16 && digit_val > max_mod_16)) {
+			num = LLONG_MAX;
+			if (bSuccess != NULL) *bSuccess = 0;
+			while (++i < s->lenStr && isxdigit(c[i]));
+			break;
+		}
+		num = num * 16 + digit_val;
 		++i;
 	}
-	if(bSuccess != NULL)
-		*bSuccess = (i == s->lenStr) ? 1 : 0;
+	if(bSuccess != NULL && *bSuccess != 0)
+		*bSuccess = (i == s->lenStr && i > 2) ? 1 : 0;
 	return num;
 }
 /*end helpers to es_str2num */
@@ -614,9 +672,12 @@ es_str2num(es_str_t *s, int *bSuccess)
 		goto done;
 	}
 
+	if (bSuccess != NULL)
+		*bSuccess = 1; /* initialize as success */
+
 	c = es_getBufAddr(s);
 	if(c[0] == '-') {
-		num = -es_str2num_dec(s, 1, bSuccess);
+		num = es_str2num_dec(s, 1, 1, bSuccess);
 	} else if(c[0] == '0') {
 		if(s->lenStr > 1 && c[1] == 'x') {
 			num = es_str2num_hex(s, bSuccess);
@@ -624,7 +685,7 @@ es_str2num(es_str_t *s, int *bSuccess)
 			num = es_str2num_oct(s, bSuccess);
 		}
 	} else { /* decimal */
-		num = es_str2num_dec(s, 0, bSuccess);
+		num = es_str2num_dec(s, 0, 0, bSuccess);
 	}
 
 done:	return num;
@@ -700,12 +761,13 @@ doUnescape(unsigned char *c, es_size_t lenStr, es_size_t *iSrc, es_size_t iDst)
 				*iSrc += 1;
 				goto done;
 			}
-			if(    (*iSrc)+2 == lenStr
+			if(    (*iSrc)+2 >= lenStr
 			   || !isxdigit(c[(*iSrc)+1])
 			   || !isxdigit(c[(*iSrc)+2])) {
 				/* error, incomplete escape, use as is */
 				c[iDst] = '\\';
 				--(*iSrc);
+				goto done;
 			}
 			c[iDst] = (hexDigitVal(c[(*iSrc)+1]) << 4) +
 				  hexDigitVal(c[(*iSrc)+2]);
