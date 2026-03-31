@@ -13,14 +13,11 @@ if test "$unamestr" = "AIX"; then
 	CC=xlc
 	CFLAGS="-qcpluscmt"
 	CPPFLAGS="-D_AIX -D_BSD=43 -D_THREAD_SAFE"
-	LIBS="-lbsd "
 	LDFLAGS="-brtl -bexpall"
 	AC_PREFIX_DEFAULT(/usr)
 	export  ac_cv_func_malloc_0_nonnull=yes
 	export ac_cv_func_realloc_0_nonnull=yes
-
 fi
-# AIXPORT End 
 
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_CONFIG_SRCDIR([src/libestr.c])
@@ -29,11 +26,7 @@ AC_CONFIG_HEADER([config.h])
 # Checks for programs.
 AC_PROG_CC
 AM_PROG_CC_C_O
-# AIXPORT START: enable dlopen
-if test "$unamestr" = "AIX"; then
-  AC_LIBTOOL_DLOPEN
-fi
-# AIXPORT end
+
 if test "$GCC" = "yes"; then
 	my_CFLAGS="-W -Wall -Wformat-security -Wshadow -Wcast-align -Wpointer-arith -Wmissing-format-attribute -g"
 else
@@ -42,15 +35,6 @@ fi
 AC_SUBST([my_CFLAGS])
 
 AC_PROG_LIBTOOL
-
-# Checks for libraries.
-save_LIBS=$LIBS
-LIBS=
-#AC_SEARCH_LIBS(clock_gettime, rt)
-#rt_libs=$LIBS
-LIBS=$save_LIBS
-
-AC_SUBST(rt_libs)
 
 
 # enable/disable the testbench (e.g. because some important parts
